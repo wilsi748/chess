@@ -47,17 +47,14 @@ public abstract class Player
 
     public abstract List<Piece> getActivePieces();
 
-
-    public void isChecked(){
-        board.loadAllMoves();
-	boolean check = false;
+    public boolean isChecked(){
+        board.loadAllMoves(); // TA INTE BORT!!!!!!
 	for(Move m :this.oppenentMoves) {
 	    if(m.getCord().equals(this.playerKing.getPieceCoordinate())){
-		System.out.println("checked");
-	        check = true;
+	        return true;
 	    }
 	}
-	this.playerKing.setChecked(check);
+	return false;
     }
 
     public List<Move> getOppenentMoves() {
@@ -66,37 +63,13 @@ public abstract class Player
 
     public boolean isStalemate(){
         //otestad
-        return legalMoves.isEmpty() && !this.playerKing.isChecked();
+        return legalMoves.isEmpty() && !this.isChecked();
 
     }
 
     public boolean isCheckMate(){
-        //board.loadAllMoves();
-        this.isChecked();
-	/*for (Move m:this.playerKing.calculateLegalMoves(board)) {
-	    Coordinate cord = m.getCord();
-	    if(this.playerKing.canKingMove(this.oppenentMoves,cord)){
-		System.out.println("king can move");
-	        return false;
-	    }
-	}
-	/*
-        if(this.playerKing.isChecked()){
 
-	    for (Move m: this.legalMoves) {
-	        boolean firstMove = m.getPiece().isFirstMove();
-	        board.movePiece(m);
-		this.isChecked();
-	        if(!this.playerKing.isChecked()){
-	            board.undoMove();
-	            return false;
-		}
-		board.undoMove();
-	    }
-	    return true;
-
-	}*/
-        return false;
+        return legalMoves.isEmpty() && this.isChecked();
     }
 
 
@@ -116,4 +89,12 @@ public abstract class Player
     public void setTurn(final boolean turn) {
 	this.turn = turn;
     }
+
+
+
+
+
+
+
+
 }

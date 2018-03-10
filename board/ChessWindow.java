@@ -79,6 +79,6 @@ public class ChessWindow extends JFrame
 	b.newGame();
     }
 
-    public void undoMove(ActionEvent e){b.undoMove();}
+    public void undoMove(ActionEvent e){b.playerUndo();}
 
 }

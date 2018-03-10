@@ -8,9 +8,7 @@ import chess.moves.Move;
 import chess.moves.TakeMove;
 import chess.pieces.*;
 import chess.players.Player;
-import chess.tile.AttackTile;
 import chess.tile.EmptyTile;
-import chess.tile.NormalTile;
 import chess.tile.OccupiedTile;
 import chess.tile.Tile;
 import chess.players.BlackPlayer;
@@ -74,11 +72,11 @@ public class ChessBoard
         this.whitePieces = calculateActivePieces(this.squares, WHITE);
         this.blackPieces = calculateActivePieces(this.squares, BLACK);
 
-        this.whiteStandardLegalMoves = calculateLegalMoves(this.whitePieces);
-        this.blackStandardLegalMoves = calculateLegalMoves(this.blackPieces);
+        this.whiteStandardLegalMoves = allMoves(this.whitePieces);
+        this.blackStandardLegalMoves = allMoves(this.blackPieces);
 
         this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves, !whiteTurn);
-        this.blackPlayer = new BlackPlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves, !blackTurn);
+        this.blackPlayer = new BlackPlayer(this, blackStandardLegalMoves, whiteStandardLegalMoves, !blackTurn);
 
 
         //loadAllMoves();
@@ -91,10 +89,32 @@ public class ChessBoard
         this.blackPieces = calculateActivePieces(this.squares, BLACK);
     }
 
+    public void loadLegalMoves(){
+        Player currentPlayer = getCurrentPlayer();
+        List<Piece> currentPieces;
+        if(currentPlayer.equals(whitePlayer)){
+            currentPieces = whitePieces;
+        }else{
+            currentPieces = blackPieces;
+        }
+        currentPlayer.setLegalMoves(calculateLegalMoves(currentPieces));
+
+        /*
+        if(this.calculateLegalMoves(this.whitePieces).isEmpty()){
+            System.out.println("WHITE CHECKMATE");
+            checkMate = true;
+        }else if(this.calculateLegalMoves(this.blackPieces).isEmpty()){
+            System.out.println("BLACK CHECKMATE");
+            checkMate = true;
+
+        }
+        */
+    }
+
     public void loadAllMoves(){
 
-        this.whiteStandardLegalMoves = calculateLegalMoves(this.whitePieces);
-        this.blackStandardLegalMoves = calculateLegalMoves(this.blackPieces);
+        this.whiteStandardLegalMoves = allMoves(this.whitePieces);
+        this.blackStandardLegalMoves = allMoves(this.blackPieces);
 
         this.whitePlayer.setLegalMoves(this.whiteStandardLegalMoves);
         this.blackPlayer.setLegalMoves(this.blackStandardLegalMoves);
@@ -113,6 +133,16 @@ public class ChessBoard
     }
 
     private List<Move> calculateLegalMoves(List<Piece> pieces) {
+        List<Move> legalMoves = new ArrayList<>();
+
+        for (Piece piece: pieces) {
+            System.out.println(piece.calculateLegalMoves(this));
+            legalMoves.addAll(piece.calculateLegalMoves(this));
+        }
+        return legalMoves;
+    }
+
+    private List<Move> allMoves(List<Piece> pieces) {
         List<Move> legalMoves = new ArrayList<>();
         for (Piece piece: pieces) {
             legalMoves.addAll(piece.allMoves(this));
@@ -184,9 +214,9 @@ public class ChessBoard
         Tile t = squares[cord.getY()][cord.getX()];
 
         if(move.getMoveType() == TAKE){
-            squares[cord.getY()][cord.getX()] = new AttackTile(cord, t.getPiece(), ATTACK_TILE);
+            squares[cord.getY()][cord.getX()] = new OccupiedTile(cord, t.getPiece(), ATTACK_TILE);
         }else{
-            squares[cord.getY()][cord.getX()] = new NormalTile(cord, NORMAL_TILE);
+            squares[cord.getY()][cord.getX()] = new EmptyTile(cord, NORMAL_TILE);
         }
 
     }
@@ -274,14 +304,7 @@ public class ChessBoard
 
         if (m.getMoveType() == TAKE ){
             TakeMove tm = (TakeMove)m;
-            //Piece takenPiece = tm.getTakenPiece();
-            //placeEmptyTile(takenPiece.getPieceCoordinate());
-            //destCord = tm.getCord();
-            //Piece attackPiece = tm.getPiece();
-            //oldCord = attackPiece.getPieceCoordinate();
-            //placeEmptyTile(oldCord);
-            //attackPiece.setPieceCoordinate(destCord);
-            //placeOccupiedTile(destCord,attackPiece);
+
             addListOfMadeMoves(tm);
             loadActivePieces();
 
@@ -297,16 +320,13 @@ public class ChessBoard
         else if(m.getMoveType() == QUEEN_SIDE_CASTLING || m.getMoveType() == KING_SIDE_CASTLING){
 
             placeOccupiedTile(destCord, p);
-
             CastlingMove cm = (CastlingMove)m;
 
             Piece rookPiece = cm.getCastlingRook();
             Coordinate rookCord = rookPiece.getPieceCoordinate();
 
             rookPiece.setOldPieceCoordinate(rookCord);
-
             placeEmptyTile(rookCord);
-
             Coordinate castlingCord;
 
             if(m.getMoveType() == QUEEN_SIDE_CASTLING) {
@@ -323,31 +343,9 @@ public class ChessBoard
             addListOfMadeMoves(m);
         }
 
-        //if(imChecked()){
-        //    undoMove();
-        //}
-
-        loadAllMoves();
         blackTurn = !blackTurn;
         whiteTurn = !whiteTurn;
-
     }
-
-
-    public boolean imChecked(){
-        getOpponentPlayer().isChecked();
-        return getOpponentPlayer().getPlayerKing().isChecked();
-    }
-
-
-    public List<Move> getCurrentMoves() {
-        return currentMoves;
-    }
-
-    public void setCurrentMoves(List<Move> currentMoves) {
-        this.currentMoves = currentMoves;
-    }
-
 
     public Coordinate getEnpassant() {
         return enpassant;
@@ -391,18 +389,6 @@ public class ChessBoard
     }
 
 
-    public void sout(){
-        System.out.println(" ");
-        //whitePlayer.isChecked();
-        //blackPlayer.isChecked();
-        /*
-        if(falsewhitePlayer.getPlayerKing().isChecked() || blackPlayer.getPlayerKing().isChecked()){
-            System.out.println("white: "+whitePlayer.getPlayerKing().isChecked());
-            System.out.println("checkmate: "+whitePlayer.isCheckMate());
-            System.out.println("black: "+blackPlayer.getPlayerKing().isChecked());
-            System.out.println("checkmate: "+blackPlayer.isCheckMate());
-        }*/
-    }
 
     public List<Move> getListOfMadeMoves() {
         return listOfMadeMoves;
@@ -453,6 +439,11 @@ public class ChessBoard
         }
     }
 
+    public void playerUndo(){
+        undoMove();
+        changeTurn();
+    }
+
     public void undoMove(){
 
         if(!listOfMadeMoves.isEmpty()) {
@@ -460,7 +451,7 @@ public class ChessBoard
             checkMate = false;
             Move m = listOfMadeMoves.get(listOfMadeMoves.size() - 1);
             listOfMadeMoves.remove(m);
-            //System.out.println(m);
+
 
             Piece piece = m.getPiece();
             Coordinate oldCord = piece.getOldPieceCoordinate();
@@ -493,11 +484,9 @@ public class ChessBoard
                 placeOccupiedTile(rookOldCord, rookPiece);
 
             }
-            loadAllMoves();
+
             blackTurn = !blackTurn;
             whiteTurn = !whiteTurn;
-        }else{
-            System.out.println("trying to undo");
         }
     }
 
@@ -525,6 +514,27 @@ public class ChessBoard
         placePiece(newPiece);
         isPromote = false;
         loadActivePieces();
+    }
+
+    public void changeTurn(){
+        loadActivePieces();
+        loadAllMoves();    //Hämtar alla moves för båda
+        loadLegalMoves(); //räkna ut alla lagliga moves som currentPlayer har.
+        Player currentPlayer = getCurrentPlayer();
+        System.out.println("changeTurn LegalMoves: " + getCurrentPlayer().getLegalMoves() + "\n" + "*************************************");
+
+
+        if(currentPlayer.isChecked()){
+            if(currentPlayer.isCheckMate()) {
+                this.checkMate = true;
+                //this.gameOver();
+            }else if(currentPlayer.isStalemate()){
+                //kod för oavgjort
+            }
+        //}else {//if(this.hasMoveBeenMade()) {
+            //changePlayer();
+        }
+
     }
 
 

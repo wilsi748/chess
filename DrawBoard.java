@@ -69,6 +69,7 @@ public class DrawBoard extends JComponent implements BoardListener
 
     public void handlePress(MouseEvent me){
 
+
 	if(me.getX()/TILE_SIZE <8 && me.getY()/TILE_SIZE <8 ) {
 	    Coordinate cord = new Coordinate(me.getX()/TILE_SIZE, me.getY()/TILE_SIZE);
 	    Tile t = board.getTile(cord);
@@ -78,11 +79,10 @@ public class DrawBoard extends JComponent implements BoardListener
 		if (cord.getY() == 3 && (xCord > 1 && xCord < 6)) {
 		    board.promotePawn(xCord);
 		}
-	    } else{ //if(!board.getCurrentPlayer().isCheckMate()){
+	    } else {
 		Alliance turn = board.getTurn();
 
 		if (t.getTileType() == EMPTY_TILE || board.getCurrentPiece() == null) {
-
 		    board.resetSelectTile();
 		    if (t.isOccupied()) {
 
@@ -90,19 +90,19 @@ public class DrawBoard extends JComponent implements BoardListener
 
 			if(turn == p.getAlliance()) {
 			    board.setCurrentPiece(p);
-			    List<Move> currentPieceMoves = p.calculateLegalMoves(board);
-
-			    /*for (Move currentPlayerMove:board.getCurrentPlayer().getLegalMoves()) {
+			    //List<Move> currentPieceMoves = p.calculateLegalMoves(board);
+			    List<Move> currentPieceMoves = new ArrayList<>();
+			    System.out.println("Drawboard LegalMoves: " + board.getCurrentPlayer().getLegalMoves() + "\n" + "*************************************");
+			    for (Move currentPlayerMove:board.getCurrentPlayer().getLegalMoves()) {
 				if(currentPlayerMove.getPiece().getPieceCoordinate().equals(p.getPieceCoordinate())){
 				    currentPieceMoves.add(currentPlayerMove);
+
 				}
-			    }*/
+			    }
 
 			    for (Move m : currentPieceMoves) {
 				board.placeSelectTile(m);
 			    }
-
-			    board.setCurrentMoves(currentPieceMoves);
 			}
 		    }
 		} else {
@@ -158,22 +158,15 @@ public class DrawBoard extends JComponent implements BoardListener
 			}
 		    }
 		    if(madeMoveThisTurn){
-		        board.loadAllMoves();
-		    }
+		        // change turn
+			board.changeTurn();
 
+		    }
 		    board.resetSelectTile();
 		    board.setCurrentPiece(null);
 		}
 	    }
-	    //System.out.println("______________________");
-	    //System.out.println(board.getListOfMadeMoves());
-	    //board.loadAllMoves();
-	    board.sout();
-
 	}//else side panel klicks
-
-
-
     }
 
 

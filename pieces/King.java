@@ -22,8 +22,6 @@ import static java.lang.Math.abs;
 public class King extends Piece
 {
 
-    private boolean isChecked;
-
     private final static Coordinate[] CANDIDATE_MOVES = {new Coordinate(0, 1),
     							    new Coordinate(0, -1),
     							    new Coordinate(-1, 0),
@@ -37,19 +35,11 @@ public class King extends Piece
 
     public King(final Coordinate pieceCoordinate, final Alliance pieceAlliance) {
 	super(PieceType.KING, pieceCoordinate, pieceAlliance, CANDIDATE_MOVES);
-	this.isChecked = false;
     }
 
-
-    public boolean isChecked() {
-	return isChecked;
-    }
-
-    public void setChecked(final boolean checked) {
-	isChecked = checked;
-    }
 
     @Override public List<Move> allMoves(final ChessBoard chessBoard) {
+
 	List<Move> legalMoves = new ArrayList<>();
 	List<Move> enemyMoves;
 	if(this.pieceAlliance == BLACK){

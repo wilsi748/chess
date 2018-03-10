@@ -91,9 +91,12 @@ public abstract class Piece
 	List<Move> toDelete = new ArrayList<>();
 
 	for (Move m:legalMoves) {
-	    chessBoard.movePiece(m);
-	    if(chessBoard.imChecked()){
+	    chessBoard.movePiece(m); //Vit flyttar pjäs
+	    if(chessBoard.getOpponentPlayer().isChecked()){//Blir svarts tur som kollar ifall vit är schackad
+		//System.out.println("Delete " + m);
 	        toDelete.add(m);
+	    }else{
+		//System.out.println("Tar inte bort " + m);
 	    }
 	    chessBoard.undoMove();
 	}

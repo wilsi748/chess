@@ -25,6 +25,8 @@ public class ChessMain extends JPanel
 
 
 	//chessBoard.placePiece(p2);
+	// TODO bonden dubble move hotar kungen även fast den inte bör göra det.
+	// DONE: schack matt men den är inte flawless kungen förstår inte att den kan röra sig från schack mat
 
 
 	ChessWindow w = new ChessWindow(chessBoard);
