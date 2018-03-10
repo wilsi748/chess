@@ -2,6 +2,7 @@ package chess.pieces;
 
 import chess.Alliance;
 import chess.Coordinate;
+import chess.board.BoardToTextConverter;
 import chess.board.ChessBoard;
 import chess.moves.Move;
 import chess.moves.NormalMove;
@@ -9,8 +10,11 @@ import chess.moves.TakeMove;
 import chess.players.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+
 
 import static chess.moves.Move.MoveType.NORMAL;
 import static chess.moves.Move.MoveType.TAKE;
@@ -86,12 +90,29 @@ public abstract class Piece
     }
 
 
+    @Override public boolean equals(final Object o) {
+	if (this == o) return true;
+	if (o == null || getClass() != o.getClass()) return false;
+	final Piece piece = (Piece) o;
+	return firstMove == piece.firstMove && pieceType == piece.pieceType &&
+	       Objects.equals(pieceCoordinate, piece.pieceCoordinate) &&
+	       Objects.equals(oldPieceCoordinates, piece.oldPieceCoordinates) && pieceAlliance == piece.pieceAlliance &&
+	       Arrays.equals(CANDIDATE_MOVES, piece.CANDIDATE_MOVES);
+    }
+
+    @Override public int hashCode() {
+	int result = Objects.hash(pieceType, pieceCoordinate, oldPieceCoordinates, pieceAlliance, firstMove);
+	result = 31 * result + Arrays.hashCode(CANDIDATE_MOVES);
+	return result;
+    }
+
     public List<Move> calculateLegalMoves(final ChessBoard chessBoard) {
 	List<Move> legalMoves = this.allMoves(chessBoard);
 	List<Move> toDelete = new ArrayList<>();
 
 	for (Move m:legalMoves) {
 	    chessBoard.movePiece(m); //Vit flyttar pjäs
+	    //System.out.println(BoardToTextConverter.convertToText(chessBoard));
 	    if(chessBoard.getOpponentPlayer().isChecked()){//Blir svarts tur som kollar ifall vit är schackad
 		//System.out.println("Delete " + m);
 	        toDelete.add(m);
@@ -99,6 +120,7 @@ public abstract class Piece
 		//System.out.println("Tar inte bort " + m);
 	    }
 	    chessBoard.undoMove();
+	    //System.out.println(BoardToTextConverter.convertToText(chessBoard));
 	}
 
 	legalMoves.removeAll(toDelete);

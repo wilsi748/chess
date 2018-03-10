@@ -90,11 +90,4 @@ public abstract class Player
 	this.turn = turn;
     }
 
-
-
-
-
-
-
-
 }

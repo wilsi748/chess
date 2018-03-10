@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 import java.io.IOException;
+import static chess.board.BoardToTextConverter.convertToText;
 
 import static chess.Alliance.WHITE;
 import static chess.pieces.Piece.PieceType.PAWN;
@@ -90,15 +91,16 @@ public class DrawBoard extends JComponent implements BoardListener
 
 			if(turn == p.getAlliance()) {
 			    board.setCurrentPiece(p);
-			    //List<Move> currentPieceMoves = p.calculateLegalMoves(board);
-			    List<Move> currentPieceMoves = new ArrayList<>();
+			    List<Move> currentPieceMoves = p.calculateLegalMoves(board);
 			    System.out.println("Drawboard LegalMoves: " + board.getCurrentPlayer().getLegalMoves() + "\n" + "*************************************");
+			    /*List<Move> currentPieceMoves = new ArrayList<>();
+
 			    for (Move currentPlayerMove:board.getCurrentPlayer().getLegalMoves()) {
 				if(currentPlayerMove.getPiece().getPieceCoordinate().equals(p.getPieceCoordinate())){
 				    currentPieceMoves.add(currentPlayerMove);
 
 				}
-			    }
+			    }*/
 
 			    for (Move m : currentPieceMoves) {
 				board.placeSelectTile(m);
@@ -106,7 +108,7 @@ public class DrawBoard extends JComponent implements BoardListener
 			}
 		    }
 		} else {
-
+		    System.out.println(board.getCurrentPlayer());
 		    boolean firstMove = board.getCurrentPiece().isFirstMove();
 		    boolean madeMoveThisTurn = false;
 		    Piece currentPiece = board.getCurrentPiece();
@@ -125,6 +127,7 @@ public class DrawBoard extends JComponent implements BoardListener
 			    board.getCurrentPiece().setFirstMove(false);
 			}
 			madeMoveThisTurn = true;
+
 		    } else if (t.getTileType() == NORMAL_TILE) {
 
 			for (Move m : currentPiece.calculateLegalMoves(board)) {
@@ -320,7 +323,7 @@ public class DrawBoard extends JComponent implements BoardListener
 		}
 
 
-		if (board.isCheckMate()) {
+		if (board.getCurrentPlayer().isCheckMate()) {
 		    g2d.drawImage(promotebkg, x * TILE_SIZE, y * TILE_SIZE, null);
 		    if (y == 3 && x == 2) {
 		        write(g2d,x*TILE_SIZE,y*TILE_SIZE,FONT_SIZE,RED,"CHECKMATE");

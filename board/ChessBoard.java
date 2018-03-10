@@ -78,8 +78,6 @@ public class ChessBoard
         this.whitePlayer = new WhitePlayer(this, whiteStandardLegalMoves, blackStandardLegalMoves, !whiteTurn);
         this.blackPlayer = new BlackPlayer(this, blackStandardLegalMoves, whiteStandardLegalMoves, !blackTurn);
 
-
-        //loadAllMoves();
     }
 
 
@@ -136,7 +134,7 @@ public class ChessBoard
         List<Move> legalMoves = new ArrayList<>();
 
         for (Piece piece: pieces) {
-            System.out.println(piece.calculateLegalMoves(this));
+            //System.out.println(piece.calculateLegalMoves(this));
             legalMoves.addAll(piece.calculateLegalMoves(this));
         }
         return legalMoves;

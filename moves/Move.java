@@ -4,6 +4,8 @@ import chess.Coordinate;
 import chess.board.ChessBoard;
 import chess.pieces.Piece;
 
+import java.util.Objects;
+
 public abstract class Move
 {
 	private ChessBoard board;
@@ -18,6 +20,19 @@ public abstract class Move
 	this.cord = cord;
 	this.moveType = moveType;
 	this.firstMove = firstMove;
+    }
+
+    @Override public boolean equals(final Object o) {
+	if (this == o) return true;
+	if (o == null || getClass() != o.getClass()) return false;
+	final Move move = (Move) o;
+	return firstMove == move.firstMove && Objects.equals(board, move.board) && Objects.equals(piece, move.piece) &&
+	       Objects.equals(cord, move.cord) && moveType == move.moveType;
+    }
+
+    @Override public int hashCode() {
+
+	return Objects.hash(board, piece, cord, moveType, firstMove);
     }
 
     public Piece getPiece() {
